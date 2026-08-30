@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — SkillBridge</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none;">Skill<span>Bridge</span></a></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <span class="user-tag" id="welcome-tag"></span>
+      <a href="#" onclick="handleLogout(event)" style="color:#2C5F8A;margin-left:20px;">Log Out</a>
+    </nav>
+  </div>
+
+  <div class="page-wrap">
+
+    <div class="section-header">
+      <div>
+        <h2>Your Internship Matches</h2>
+        <p>Ranked by how closely your skills match each listing.</p>
+      </div>
+    </div>
+
+    <div id="skills-summary" class="card" style="background:#EEF3F7;border:none;"></div>
+
+    <div id="job-list"></div>
+
+  </div>
+
+  <footer>
+    Built for the College Ideathon — SkillBridge Prototype © 2026
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    initData();
+
+    // Check if user is logged in
+    const currentStudent = getCurrentUser();
+    if (!currentStudent || currentStudent.role !== "student") {
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("welcome-tag").textContent = "Hi, " + currentStudent.name.split(" ")[0];
+
+    document.getElementById("skills-summary").innerHTML = `
+      <strong>Your skills:</strong>
+      <div class="tag-list">
+        ${currentStudent.skills.map(s => `<span class="tag">${s}</span>`).join("")}
+      </div>
+    `;
+
+    function renderJobs() {
+      const ranked = getRankedJobsForStudent(currentStudent);
+      const container = document.getElementById("job-list");
+
+      if (ranked.length === 0) {
+        container.innerHTML = `<div class="empty-state"><p>No internships posted yet. Check back soon.</p></div>`;
+        return;
+      }
+
+      const applications = getApplications();
+
+      container.innerHTML = ranked.map(job => {
+        const myApplication = applications.find(
+          a => a.jobId === job.id && a.studentId === currentStudent.id
+        );
+
+        let statusBadge = `<button class="btn btn-primary btn-small" onclick="applyToJob('${job.id}')">Apply Now</button>`;
+        if (myApplication) {
+          const statusColors = { "Applied": "#F1F0EA", "Accepted": "#E6F4EA", "Rejected": "#F8E8E8" };
+          const statusTextColors = { "Applied": "#4A4A44", "Accepted": "#2F855A", "Rejected": "#9B2C2C" };
+          statusBadge = `<span class="status-pill" style="background:${statusColors[myApplication.status]};color:${statusTextColors[myApplication.status]}">${myApplication.status}</span>`;
+        }
+
+        return `
+          <div class="card">
+            <div class="card-row">
+              <div>
+                <h3>${job.title}</h3>
+                <div class="org">${job.org}</div>
+              </div>
+              <span class="match-badge ${getMatchClass(job.score)}">${job.score}% match</span>
+            </div>
+            <div class="tag-list">
+              ${job.skills.map(s => `<span class="tag">${s}</span>`).join("")}
+            </div>
+            <div class="meta-row">
+              <strong>Stipend:</strong> ${job.stipend} &nbsp;•&nbsp; <strong>Duration:</strong> ${job.duration}
+            </div>
+            <div style="margin-top:14px;">
+              ${statusBadge}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function applyToJob(jobId) {
+      addApplication({
+        id: generateId("app"),
+        studentId: currentStudent.id,
+        jobId: jobId,
+        appliedAt: new Date().toISOString(),
+        status: "Applied"
+      });
+      renderJobs();
+    }
+
+    function handleLogout(e) {
+      e.preventDefault();
+      logoutUser();
+      window.location.href = "login.html";
+    }
+
+    renderJobs();
+  </script>
+</body>
+</html>

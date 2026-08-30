@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in — SkillBridge</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none;">Skill<span>Bridge</span></a></div>
+    <nav>
+      <a href="index.html">Home</a>
+    </nav>
+  </div>
+
+  <div class="narrow-wrap">
+    <div class="form-card">
+      <h2 id="form-title">Welcome to SkillBridge</h2>
+      <p class="subtitle" id="form-subtitle">Log in or create a new account.</p>
+
+      <div class="role-toggle">
+        <button type="button" id="btn-role-student" class="active" onclick="setRole('student')">I'm a Student</button>
+        <button type="button" id="btn-role-industry" onclick="setRole('industry')">I'm an Organization</button>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <button type="button" id="btn-mode-login" class="active" style="flex:1;padding:10px;border:1.5px solid #D8D5CC;background:#FFFFFF;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;color:#6B7280;" onclick="setMode('login')">Log In</button>
+        <button type="button" id="btn-mode-signup" style="flex:1;padding:10px;border:1.5px solid #D8D5CC;background:#FFFFFF;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;color:#6B7280;" onclick="setMode('signup')">Sign Up</button>
+      </div>
+
+      <!-- ============ LOGIN FORMS ============ -->
+
+      <!-- Student Login -->
+      <form id="student-login" onsubmit="handleStudentLogin(event)">
+        <label for="sl-email">Email or Phone</label>
+        <input type="text" id="sl-email" placeholder="e.g. ananya@example.com or 9876543210" required>
+
+        <label for="sl-password">Password</label>
+        <input type="password" id="sl-password" placeholder="Password" required>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:22px;">Log In</button>
+        <div id="sl-error" style="color:#9B2C2C;font-size:13px;margin-top:10px;"></div>
+      </form>
+
+      <!-- Industry Login -->
+      <form id="industry-login" onsubmit="handleIndustryLogin(event)" style="display:none;">
+        <label for="il-email">Email or Phone</label>
+        <input type="text" id="il-email" placeholder="e.g. hr@technova.com or 9000000001" required>
+
+        <label for="il-password">Password</label>
+        <input type="password" id="il-password" placeholder="Password" required>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:22px;">Log In</button>
+        <div id="il-error" style="color:#9B2C2C;font-size:13px;margin-top:10px;"></div>
+      </form>
+
+      <!-- ============ SIGNUP FORMS ============ -->
+
+      <!-- Student Signup -->
+      <form id="student-signup" onsubmit="handleStudentSignup(event)" style="display:none;">
+        <label for="ss-name">Full Name</label>
+        <input type="text" id="ss-name" placeholder="e.g. Bhumesh Rajput" required>
+
+        <label for="ss-email">Email</label>
+        <input type="email" id="ss-email" placeholder="e.g. you@example.com" required>
+
+        <label for="ss-phone">Phone Number</label>
+        <input type="text" id="ss-phone" placeholder="e.g. 9876543210" required>
+
+        <label for="ss-password">Password</label>
+        <input type="password" id="ss-password" placeholder="Password" required>
+
+        <label for="ss-college">College</label>
+        <input type="text" id="ss-college" placeholder="e.g. DHSGSU Sagar" required>
+
+        <label for="ss-skills">Your Skills</label>
+        <input type="text" id="ss-skills" placeholder="e.g. Python, SQL, React" required>
+        <div class="hint">Separate each skill with a comma.</div>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:22px;">Create Account</button>
+        <div id="ss-error" style="color:#9B2C2C;font-size:13px;margin-top:10px;"></div>
+      </form>
+
+      <!-- Industry Signup -->
+      <form id="industry-signup" onsubmit="handleIndustrySignup(event)" style="display:none;">
+        <label for="is-name">Contact Person Name</label>
+        <input type="text" id="is-name" placeholder="e.g. HR Manager Name" required>
+
+        <label for="is-org">Organization Name</label>
+        <input type="text" id="is-org" placeholder="e.g. TechNova Pvt Ltd" required>
+
+        <label for="is-email">Email</label>
+        <input type="email" id="is-email" placeholder="e.g. hr@technova.com" required>
+
+        <label for="is-phone">Phone Number</label>
+        <input type="text" id="is-phone" placeholder="e.g. 9000000001" required>
+
+        <label for="is-password">Password</label>
+        <input type="password" id="is-password" placeholder="Password" required>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:22px;">Create Account</button>
+        <div id="is-error" style="color:#9B2C2C;font-size:13px;margin-top:10px;"></div>
+      </form>
+
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid #E5E2DA;font-size:12px;color:#6B7280;text-align:center;">
+        <strong>Demo credentials:</strong><br>
+        Student: ananya@example.com / pass123<br>
+        Industry: hr@technova.com / pass123
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Built for the College Ideathon — SkillBridge Prototype © 2026
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    initData();
+    let currentRole = "student";
+    let currentMode = "login";
+
+    function setRole(role) {
+      currentRole = role;
+      document.getElementById("btn-role-student").classList.toggle("active", role === "student");
+      document.getElementById("btn-role-industry").classList.toggle("active", role === "industry");
+      updateFormDisplay();
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById("btn-mode-login").classList.toggle("active", mode === "login");
+      document.getElementById("btn-mode-signup").classList.toggle("active", mode === "signup");
+      updateFormDisplay();
+    }
+
+    function updateFormDisplay() {
+      const isStudent = currentRole === "student";
+      const isLogin = currentMode === "login";
+      
+      document.getElementById("student-login").style.display = (isStudent && isLogin) ? "block" : "none";
+      document.getElementById("student-signup").style.display = (isStudent && !isLogin) ? "block" : "none";
+      document.getElementById("industry-login").style.display = (!isStudent && isLogin) ? "block" : "none";
+      document.getElementById("industry-signup").style.display = (!isStudent && !isLogin) ? "block" : "none";
+    }
+
+    function handleStudentLogin(e) {
+      e.preventDefault();
+      const emailOrPhone = document.getElementById("sl-email").value.trim();
+      const password = document.getElementById("sl-password").value.trim();
+      const errorDiv = document.getElementById("sl-error");
+
+      const user = validateLogin(emailOrPhone, password);
+      if (!user || user.role !== "student") {
+        errorDiv.textContent = "Invalid email/phone or password.";
+        return;
+      }
+      
+      setCurrentUser(user);
+      window.location.href = "student.html";
+    }
+
+    function handleIndustryLogin(e) {
+      e.preventDefault();
+      const emailOrPhone = document.getElementById("il-email").value.trim();
+      const password = document.getElementById("il-password").value.trim();
+      const errorDiv = document.getElementById("il-error");
+
+      const user = validateLogin(emailOrPhone, password);
+      if (!user || user.role !== "industry") {
+        errorDiv.textContent = "Invalid email/phone or password.";
+        return;
+      }
+      
+      setCurrentUser(user);
+      window.location.href = "industry.html";
+    }
+
+    function handleStudentSignup(e) {
+      e.preventDefault();
+      const name = document.getElementById("ss-name").value.trim();
+      const email = document.getElementById("ss-email").value.trim();
+      const phone = document.getElementById("ss-phone").value.trim();
+      const password = document.getElementById("ss-password").value.trim();
+      const college = document.getElementById("ss-college").value.trim();
+      const skills = parseSkillsInput(document.getElementById("ss-skills").value);
+      const errorDiv = document.getElementById("ss-error");
+
+      const newUser = signup(name, email || phone, password, "student", { email, phone, college, skills });
+      if (!newUser) {
+        errorDiv.textContent = "This email or phone is already registered.";
+        return;
+      }
+
+      setCurrentUser(newUser);
+      window.location.href = "student.html";
+    }
+
+    function handleIndustrySignup(e) {
+      e.preventDefault();
+      const name = document.getElementById("is-name").value.trim();
+      const org = document.getElementById("is-org").value.trim();
+      const email = document.getElementById("is-email").value.trim();
+      const phone = document.getElementById("is-phone").value.trim();
+      const password = document.getElementById("is-password").value.trim();
+      const errorDiv = document.getElementById("is-error");
+
+      const newUser = signup(name, email || phone, password, "industry", { email, phone, orgName: org });
+      if (!newUser) {
+        errorDiv.textContent = "This email or phone is already registered.";
+        return;
+      }
+
+      setCurrentUser(newUser);
+      window.location.href = "industry.html";
+    }
+  </script>
+</body>
+</html>
